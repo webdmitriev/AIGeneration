@@ -10,7 +10,7 @@ import SwiftUI
 struct OnboardingDescrModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .urbanist(.urbanistMedium, 16)
+            .urbanist(.montserratMedium, 16)
             .frame(maxWidth: .infinity)
             .padding(.bottom, 36)
             .multilineTextAlignment(.center)

@@ -8,41 +8,63 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var selectedCategory: String?
-    let items = AIGenerationStruct.mockData()
-    
-    var categories: [String] {
-        Array(Set(items.flatMap { $0.category } )).sorted()
-    }
-    
-    var filteredItems: [AIGenerationItemStruct] {
-        if let selectedCategory = selectedCategory {
-            return items.filter { $0.category.contains(selectedCategory) }
-        } else {
-            return items
-        }
-    }
+    @State private var scrollOffset: CGFloat = 0
+    @State private var isTopBarVisible: Bool = true
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
-        VStack(spacing: 20) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(categories, id: \.self) { category in
-                        CategoryButton(
-                            title: category,
-                            isSelected: selectedCategory == category
-                        ) {
-                            withAnimation {
-                                selectedCategory = (selectedCategory == category) ? nil : category
-                            }
+        VStack(spacing: 12) {
+            CustomTopBar(title: "Main") {
+                print("Settings screen")
+            }
+            .frame(height: isTopBarVisible ? 40 : 0)
+            .clipped()
+            .opacity(isTopBarVisible ? 1 : 0)
+            .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
+            
+            categoryScrollView
+                .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
+            
+            contentCardsView
+        }
+        .background(.appBg)
+        .navigationBarHidden(true)
+        .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
+    }
+    
+    private var categoryScrollView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(viewModel.categories, id: \.self) { category in
+                    CategoryButton(
+                        title: category,
+                        isSelected: viewModel.selectedCategory == category
+                    ) {
+                        viewModel.selectCategory(category)
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical, 8)
+    }
+    
+    private var contentCardsView: some View {
+        ScrollView {
+            VStack(spacing: 6) {
+                ScrollViewOffsetReader { offset in
+                    scrollOffset = offset
+
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        if offset < -40 {
+                            isTopBarVisible = false
+                        } else if offset < 10 {
+                            isTopBarVisible = true
                         }
                     }
                 }
-                .padding(.horizontal)
-            }
-            .padding(.vertical, 8)
-            
-            ScrollView {
+                .frame(height: 0)
+
                 LazyVGrid(
                     columns: [
                         GridItem(.adaptive(minimum: 216, maximum: 216),
@@ -50,17 +72,16 @@ struct HomeView: View {
                         GridItem(.adaptive(minimum: 216, maximum: 216),
                                  spacing: 6, alignment: .top)
                     ],
-                    spacing: 6,
+                    spacing: 6
                 ) {
-                    ForEach(filteredItems, id: \.id) { item in
+                    ForEach(viewModel.filteredItems, id: \.id) { item in
                         AIGenerationCard(item: item)
                     }
                 }
-                .padding(.horizontal)
             }
+            .padding(.horizontal)
         }
-        .navigationTitle("AI Generation")
-        .background(.appBg)
+        .coordinateSpace(name: "scroll")
     }
 }
 
@@ -74,10 +95,11 @@ struct CategoryButton: View {
         Button(action: action) {
             Text(title)
                 .modifier(CategoryButtonModifier())
+                .kerning(0.4)
                 .foregroundColor(isSelected ? .white : .primary)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(isSelected ? Color.appPurpule : Color.gray.opacity(0.2))
+                        .fill(isSelected ? Color.appPurpule : Color.gray.opacity(0.1))
                 )
         }
     }
@@ -116,6 +138,29 @@ struct AIGenerationCard: View {
         .clipped()
     }
 }
+
+// MARK: ScrollOffsetPreferenceKey
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+// MARK: ScrollViewOffsetReader
+struct ScrollViewOffsetReader: View {
+    var onOffsetChange: (CGFloat) -> Void
+
+    var body: some View {
+        GeometryReader { geometry in
+            Color.clear
+                .preference(key: ScrollOffsetPreferenceKey.self,
+                            value: geometry.frame(in: .named("scroll")).minY)
+        }
+        .onPreferenceChange(ScrollOffsetPreferenceKey.self, perform: onOffsetChange)
+    }
+}
+
 
 #Preview {
     HomeView()

@@ -10,7 +10,7 @@ import SwiftUI
 struct ButtonPurpuleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .urbanist(.urbanistMedium, 16)
+            .urbanist(.montserratMedium, 16)
             .frame(maxWidth: .infinity, minHeight: 62)
             .foregroundColor(.appWhite)
             .background(.appPurpule)

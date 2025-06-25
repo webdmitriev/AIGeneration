@@ -8,10 +8,10 @@
 import SwiftUI
 
 enum FontName: String {
-    case urbanistRegular = "Urbanist-Regular"
     case urbanistMedium = "Urbanist-Medium"
-    case urbanistBold = "Urbanist-Bold"
-    case urbanistBlack = "Urbanist-Black"
+    case montserratMedium = "Montserrat-Medium"
+    case montserratBold = "Montserrat-Bold"
+    
 }
 
 extension View {

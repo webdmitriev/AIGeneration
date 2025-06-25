@@ -10,9 +10,9 @@ import SwiftUI
 struct OnboardingTitleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+            .urbanist(.urbanistBlack, 30)
             .frame(maxWidth: .infinity)
             .padding(.bottom, 18)
-            .font(.system(size: 30, weight: .bold))
             .multilineTextAlignment(.center)
             .foregroundColor(.appWhite)
     }

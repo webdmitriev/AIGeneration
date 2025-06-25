@@ -10,8 +10,8 @@ import SwiftUI
 struct ButtonPurpuleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
+            .urbanist(.urbanistMedium, 16)
             .frame(maxWidth: .infinity, minHeight: 62)
-            .font(.system(size: 16, weight: .medium))
             .foregroundColor(.appWhite)
             .background(.appPurpule)
             .clipShape(RoundedRectangle(cornerRadius: 31))

@@ -245,7 +245,3 @@ struct PremiumItem: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
-
-#Preview {
-    SubscribeView()
-}

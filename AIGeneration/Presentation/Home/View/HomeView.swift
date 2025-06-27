@@ -84,7 +84,9 @@ struct HomeView: View {
                     spacing: 6
                 ) {
                     ForEach(viewModel.filteredItems, id: \.id) { item in
-                        AIGenerationCard(item: item)
+                        NavigationLink(destination: AIGenerationCardSingle(item: item)) {
+                            AIGenerationCard(item: item)
+                        }
                     }
                 }
             }

@@ -70,7 +70,6 @@ struct AIGenerationCardSingle: View {
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .clipped()
 
-            
             Button {
                 print("Generate")
             } label: {

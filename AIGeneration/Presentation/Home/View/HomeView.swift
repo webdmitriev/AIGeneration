@@ -170,3 +170,9 @@ struct ScrollViewOffsetReader: View {
     }
 }
 
+
+#Preview {
+    let appState = AppState()
+    return CustomTabBar()
+        .environmentObject(appState)
+}

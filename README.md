@@ -14,9 +14,9 @@
 - UnitTest
 
 ## 📸 Скриншоты
-| Onboarding | HomeView | AIPhoto | History | Settings |
-|--------------|--------------|--------------|--------------|--------------|
-| ![Главный](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-01.jpg) | ![Карточка дома](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-02.jpg) | ![Отзыв](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-03.jpg) | ![Карта](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-04.jpg) | ![Поиск](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-05.jpg) |
+| Onboarding | HomeView | Premium |
+|--------------|--------------|--------------|
+| ![Onboarding](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-01.jpg) | ![HomeView](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-02.jpg) | ![Premium](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-03.jpg) |
 
 ## ⚙️ Установка
 1. Клонируйте репозиторий:

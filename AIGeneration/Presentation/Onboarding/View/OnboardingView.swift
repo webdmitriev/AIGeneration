@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct OnboardingView: View {
+    @StateObject var appState = AppState()
     @StateObject private var viewModel = OnboardingViewModel()
+
     @State private var showHomeView = false
     @State private var currentOpacity: Double = 1
     
     var body: some View {
         Group {
             if showHomeView {
-                HomeView()
+                CustomTabBar()
+                    .environmentObject(appState)
             } else {
                 content
             }
@@ -26,7 +29,6 @@ struct OnboardingView: View {
         TabView(selection: $viewModel.currentPageIndex) {
             ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { idx, item in
                 ZStack(alignment: .bottom) {
-                    // bg
                     Image(item.image)
                         .resizable()
                         .edgesIgnoringSafeArea(.all)

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SubscribeView: View {
+    @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) var dismiss
     
     @StateObject private var viewModel = SubscribeViewModel()
@@ -19,11 +20,11 @@ struct SubscribeView: View {
     var body: some View {
         VStack(spacing: 0) {
             topBar
-
+            
             Spacer()
-
+            
             BgGradient(height: 180, opacity: 1)
-
+            
             premiumItemsSection
         }
         .background {
@@ -35,6 +36,16 @@ struct SubscribeView: View {
         .ignoresSafeArea()
         .navigationBarHidden(true)
         .background(.appBg)
+        .onAppear {
+            withAnimation {
+                appState.isTabBarVisible = false
+            }
+        }
+        .onDisappear {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                appState.isTabBarVisible = true
+            }
+        }
         .sheet(isPresented: $isShowTerms) {
             PopupTermsView()
                 .presentationDetents([.medium])

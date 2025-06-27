@@ -33,6 +33,8 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showSubscribeView) {
                 SubscribeView()
             }
+            .frame(maxHeight: .infinity)
+            .padding(.bottom, 60)
             .background(.appBg)
             .navigationBarHidden(true)
             .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
@@ -168,7 +170,3 @@ struct ScrollViewOffsetReader: View {
     }
 }
 
-
-#Preview {
-    HomeView()
-}

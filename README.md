@@ -16,7 +16,7 @@
 ## 📸 Скриншоты
 | Onboarding | HomeView | Premium |
 |--------------|--------------|--------------|
-| ![Onboarding](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-01.jpg) | ![HomeView](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-02.jpg) | ![Premium](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-03.jpg) |
+| ![Onboarding](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-01.1.jpg) | ![HomeView](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-02.jpg) | ![Premium](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-03.jpg) |
 
 ## ⚙️ Установка
 1. Клонируйте репозиторий:

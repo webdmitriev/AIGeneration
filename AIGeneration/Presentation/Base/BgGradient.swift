@@ -18,7 +18,7 @@ struct BgGradient: View {
         Rectangle()
             .fill(
                 LinearGradient(
-                    gradient: Gradient(colors: [.clear, .black.opacity(opacity)]),
+                    gradient: Gradient(colors: [.clear, .appBg.opacity(opacity)]),
                     startPoint: reverse ? .top : .bottom,
                     endPoint: reverse ? .bottom : .top
                 )

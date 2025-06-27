@@ -10,26 +10,33 @@ import SwiftUI
 struct HomeView: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var isTopBarVisible: Bool = true
+    @State private var showSubscribeView = false
+
     @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
-        VStack(spacing: 12) {
-            CustomTopBar(title: "Main") {
-                print("Settings screen")
-            }
-            .frame(height: isTopBarVisible ? 40 : 0)
-            .clipped()
-            .opacity(isTopBarVisible ? 1 : 0)
-            .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
-            
-            categoryScrollView
+        NavigationStack {
+            VStack(spacing: 12) {
+                CustomTopBar(title: "Main") {
+                    showSubscribeView = true
+                }
+                .frame(height: isTopBarVisible ? 40 : 0)
+                .clipped()
+                .opacity(isTopBarVisible ? 1 : 0)
                 .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
-            
-            contentCardsView
+                
+                categoryScrollView
+                    .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
+                
+                contentCardsView
+            }
+            .navigationDestination(isPresented: $showSubscribeView) {
+                SubscribeView()
+            }
+            .background(.appBg)
+            .navigationBarHidden(true)
+            .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
         }
-        .background(.appBg)
-        .navigationBarHidden(true)
-        .animation(.easeInOut(duration: 0.3), value: isTopBarVisible)
     }
     
     private var categoryScrollView: some View {

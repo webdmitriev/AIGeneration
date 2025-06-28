@@ -1,14 +1,14 @@
 //
-//  PhotoView.swift
+//  VideoView.swift
 //  AIGeneration
 //
-//  Created by Олег Дмитриев on 27.06.2025.
+//  Created by Олег Дмитриев on 28.06.2025.
 //
 
 import SwiftUI
 import PhotosUI
 
-struct PhotoView: View {
+struct VideoView: View {
     @State private var showSubscribeView: Bool = false
     @State private var withoutPhoto: Bool = true
     @State private var usePhoto: Bool = false
@@ -21,7 +21,7 @@ struct PhotoView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 22) {
-                CustomTopBar(title: "AI Photo") {
+                CustomTopBar(title: "AI Video") {
                     showSubscribeView = true
                 }
                 .frame(height: 40)
@@ -112,9 +112,3 @@ struct PhotoView: View {
         .frame(maxWidth: .infinity, minHeight: 212, maxHeight: 212)
     }
 }
-
-//#Preview {
-//    let appState = AppState()
-//    return PhotoView()
-//        .environmentObject(appState)
-//}

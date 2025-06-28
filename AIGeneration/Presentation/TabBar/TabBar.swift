@@ -103,14 +103,7 @@ struct TabBarButton: View {
     }
 }
 
-struct VideoView: View {
-    var body: some View {
-        VStack {
-            Text("Video Screen")
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
+
 
 struct HistoryView: View {
     var body: some View {

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct EnterPromptView: View {
-    
     @State var yourTextVariable: String = ""
     
     var body: some View {
@@ -27,7 +26,6 @@ struct EnterPromptView: View {
     }
 }
 
-
 struct MultilineTextField: View {
     let placeholder: String
     @Binding var text: String
@@ -45,8 +43,37 @@ struct MultilineTextField: View {
             TextEditor(text: $text)
                 .foregroundColor(.white)
                 .scrollContentBackground(.hidden)
+                .padding(.bottom, 40)
+            
+            VStack {
+                Spacer()
+                
+                HStack {
+                    Spacer()
+                    
+                    Button {
+                        print("Surprise me!")
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image("icon-starts-white")
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                                .scaledToFit()
+                            
+                            Text("Surprise me!")
+                                .urbanist(.montserratMedium, 14)
+                                .foregroundStyle(.appWhite)
+                        }
+                    }
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .background(.appBg)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+            }
+            .padding(.bottom, 8)
         }
-        .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 192)
+        .frame(maxWidth: .infinity, minHeight: 158, maxHeight: 192)
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
         .background(Color.appWhite.opacity(0.05))

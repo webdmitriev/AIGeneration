@@ -10,13 +10,13 @@ import SwiftUI
 
 @MainActor
 final class ImageGenerator: ObservableObject {
-    // MARK: - Публичные свойства
+    // MARK: - Публичные свойства!
     @Published var generatedImage: UIImage?
     @Published var isLoading = false
     @Published var error: String?
     @Published var inputImage: UIImage?
     
-    // MARK: - Приватные свойства
+    // MARK: - Приватные свойства!
     private let env = Env()
     private var defaultHeaders: [String: String] {
         [

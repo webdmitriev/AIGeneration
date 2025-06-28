@@ -71,7 +71,7 @@ struct CustomTabBar: View {
             VideoView()
                 .environmentObject(appState)
         case 3:
-            HistoryView()
+            HistoryView(selection: $selectedTab)
                 .environmentObject(appState)
         default:
             EmptyView()

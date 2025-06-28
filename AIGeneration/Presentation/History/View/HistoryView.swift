@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @Binding var selection: Int
+    
     @State private var showSettingsView: Bool = false
     @State private var tabToggle: Bool = true
     
@@ -111,10 +113,10 @@ struct HistoryView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .foregroundStyle(.appWhite.opacity(0.6))
             
-            NavigationLink {
-                // доделать!!! (заглушка)
-                HomeView()
-                // доделать!!! (заглушка)
+            Button {
+                withAnimation(.spring()) {
+                    selection = 0
+                }
             } label: {
                 Text("View Templates")
                     .modifier(ButtonPurpuleModifier())

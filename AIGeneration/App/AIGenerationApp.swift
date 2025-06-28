@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import DotEnv
 
 @main
-struct AIGenerationApp: App {
+struct AIGenerationApp: App {    
     var body: some Scene {
         WindowGroup {
-            OnboardingView()
+            ContentView()
         }
     }
 }

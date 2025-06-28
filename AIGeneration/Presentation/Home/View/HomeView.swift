@@ -116,7 +116,7 @@ struct CategoryButton: View {
     }
 }
 
-// MARK: AIGenerationCard
+// MARK: AIGenerationCard + for HistoryView
 struct AIGenerationCard: View {
     let item: AIGenerationItemStruct
     

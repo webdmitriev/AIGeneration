@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		53B8B7462E10963B00F89C42 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 53B8B7452E10963A00F89C42 /* .gitignore */; };
-		53B8B7492E10972500F89C42 /* DotEnv in Frameworks */ = {isa = PBXBuildFile; productRef = 53B8B7482E10972500F89C42 /* DotEnv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,7 +41,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53B8B7492E10972500F89C42 /* DotEnv in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +84,6 @@
 			);
 			name = AIGeneration;
 			packageProductDependencies = (
-				53B8B7482E10972500F89C42 /* DotEnv */,
 			);
 			productName = AIGeneration;
 			productReference = 530E8AE42E0A6C1200F574EA /* AIGeneration.app */;
@@ -117,7 +114,6 @@
 			mainGroup = 530E8ADB2E0A6C1200F574EA;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				53B8B7472E10972500F89C42 /* XCRemoteSwiftPackageReference "DotEnv" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 530E8AE52E0A6C1200F574EA /* Products */;
@@ -352,25 +348,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		53B8B7472E10972500F89C42 /* XCRemoteSwiftPackageReference "DotEnv" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/swiftpackages/DotEnv.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		53B8B7482E10972500F89C42 /* DotEnv */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 53B8B7472E10972500F89C42 /* XCRemoteSwiftPackageReference "DotEnv" */;
-			productName = DotEnv;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 530E8ADC2E0A6C1200F574EA /* Project object */;
 }

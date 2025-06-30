@@ -6,13 +6,15 @@
 //
 
 import SwiftUI
-import DotEnv
 
 @main
-struct AIGenerationApp: App {    
+struct AIGenerationApp: App {
+    let appState = AppState()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CustomTabBar()
+                .environmentObject(appState)
         }
     }
 }

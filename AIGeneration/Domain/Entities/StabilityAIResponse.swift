@@ -43,3 +43,49 @@ enum GenerationError: LocalizedError {
         }
     }
 }
+
+enum GenerationSurprice {
+    case one
+    case two
+    case three
+    case four
+    case five
+    case six
+    case seven
+    case eight
+    case nine
+    case ten
+    
+    var surpriceText: String {
+        switch self {
+        case .one:
+            "A fluffy ginger cat napping in a hammock between palm trees on Boracay Beach, sunset sky, tropical watercolor style"
+        case .two:
+            "A striped grey cat sailing on a Philippine bangka boat, turquoise ocean, traditional Filipino woodcut art style"
+        case .three:
+            "A cat wearing a sarong hat sitting on a balcony in Manila, neon signs, rainy night, cyberpunk aesthetic"
+        case .four:
+            "A white cat meditating in front of Mayon Volcano’s perfect cone, pastel colors, Studio Ghibli-inspired"
+        case .five:
+            "A playful kitten hiding in a basket of mangoes and pineapples at a Filipino wet market, vibrant colors, detailed illustration"
+        case .six:
+            "A cat dressed as a Sinulog dancer with feathered costume, dynamic motion, festival lights, digital painting"
+        case .seven:
+            "A mermaid cat exploring Philippine coral reefs with parrotfish, fantasy realism, glowing scales"
+        case .eight:
+            "A black cat with lantern-like eyes in a lively Peryahan night market, atmospheric lighting, Ghibli-esque"
+        case .nine:
+            "A farmer cat resting on Banaue Rice Terraces, misty green hills, realistic watercolor texture"
+        case .ten:
+            "A cat transformed into the Filipino dragon Bakunawa, fiery tail, epic stormy sky, Warcraft-style digital art"
+        }
+    }
+}
+
+extension GenerationSurprice {
+    static func random() -> GenerationSurprice {
+        let allCases: [GenerationSurprice] = [.one, .two, .three, .four, .five,
+                                            .six, .seven, .eight, .nine, .ten]
+        return allCases.randomElement()!
+    }
+}

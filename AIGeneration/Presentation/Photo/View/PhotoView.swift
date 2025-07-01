@@ -24,28 +24,28 @@ struct PhotoView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 22) {
-                CustomTopBar(title: "AI Photo") {
-                    showSubscribeView = true
+            ScrollView {
+                VStack(spacing: 22) {
+                    CustomTopBar(title: "AI Photo") {
+                        showSubscribeView = true
+                    }
+                    .frame(height: 40)
+                    .clipped()
+                    
+                    VStack(spacing: 12) {
+                        modePickerSection
+                        
+                        textInputSection
+                        
+                        imageUploadSection
+                        
+                        generateButton
+                    }
+                    .padding(.horizontal, 16)
+                    
+                    // result
+                    resultSection
                 }
-                .frame(height: 40)
-                .clipped()
-                
-                VStack(spacing: 12) {
-                    modePickerSection
-                    
-                    textInputSection
-                    
-                    imageUploadSection
-                    
-                    generateButton
-                }
-                .padding(.horizontal, 16)
-                    
-                // result
-                resultSection
-                
-                Spacer()
             }
             .navigationDestination(isPresented: $showSubscribeView) {
                 SubscribeView()
@@ -76,10 +76,10 @@ struct PhotoView: View {
         }
         .pickerStyle(.segmented)
         .background(
-            RoundedRectangle(cornerRadius: 22) // Увеличиваем скругление
-                .fill(Color.gray.opacity(0.2)) // Фон
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color.gray.opacity(0.2))
         )
-        .clipShape(RoundedRectangle(cornerRadius: 22)) // Обрезаем края
+        .clipShape(RoundedRectangle(cornerRadius: 22))
         .padding(.bottom, 18)
         .onChange(of: mode) { oldValue, _ in
             generator.generatedImage = nil
@@ -93,16 +93,38 @@ struct PhotoView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundStyle(.appWhite)
             
-            ZStack {
+            ZStack(alignment: .bottomTrailing) {
                 TextField("", text: $prompt,
                           prompt: Text(placeholderString).foregroundColor(.appWhite.opacity(0.2)),
                           axis: .vertical)
-                .padding(12)
-                .textFieldStyle(.plain)
-                .foregroundStyle(.appWhite.opacity(0.8))
-                .background(.appWhite.opacity(0.05))
-                .lineLimit(8...10)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .padding(12)
+                    .textFieldStyle(.plain)
+                    .foregroundStyle(.appWhite.opacity(0.8))
+                    .background(.appWhite.opacity(0.05))
+                    .lineLimit(8...10)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                
+                Button {
+                    let randomSurprise = GenerationSurprice.random()
+                    prompt = randomSurprise.surpriceText
+                } label: {
+                    HStack(spacing: 4) {
+                        Image("icon-starts-white")
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                            .scaledToFit()
+                        
+                        Text("Surprise me!")
+                            .urbanist(.montserratMedium, 14)
+                            .foregroundStyle(.appWhite)
+                    }
+                }
+                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .background(.appBg)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .padding(.trailing, 12)
+                .padding(.bottom, 12)
             }
         }
     }
@@ -124,6 +146,7 @@ struct PhotoView: View {
                                 .foregroundColor(.appBlack)
                                 .padding(8)
                         }
+                        .padding(.trailing, 12)
                     }
             } else {
                 VStack(spacing: 8) {
@@ -159,16 +182,17 @@ struct PhotoView: View {
                 ProgressView()
                     .tint(.white)
             } else {
-                Text("Сгенерировать")
-                    .urbanist(.montserratMedium, 16)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
-                    .foregroundStyle(.appWhite)
-                    .background(.appWhite.opacity(0.05))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                if prompt.isEmpty {
+                    Text("Create")
+                        .modifier(ButtonBlackModifier())
+                } else {
+                    Text("Create")
+                        .modifier(ButtonPurpuleModifier())
+                }
             }
         }
         .disabled(generator.isLoading || prompt.isEmpty)
+        
     }
     
     private var resultSection: some View {

@@ -10,9 +10,10 @@ import PhotosUI
 
 struct PhotoView: View {
     @StateObject private var generator = ImageGenerator()
+
     @State private var prompt: String = ""
     @State private var mode: GenerationMode = .textOnly
-    @State private var showImagePicker = false
+    @State private var showImagePicker: Bool = false
     
     @State private var showSubscribeView: Bool = false
     
@@ -25,26 +26,30 @@ struct PhotoView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 22) {
-                    CustomTopBar(title: "AI Photo") {
-                        showSubscribeView = true
+                ZStack {
+                    VStack(spacing: 22) {
+                        CustomTopBar(title: "AI Photo") {
+                            showSubscribeView = true
+                        }
+                        .frame(height: 40)
+                        .clipped()
+                        
+                        VStack(spacing: 12) {
+                            modePickerSection
+                            
+                            textInputSection
+                            
+                            imageUploadSection
+                            
+                            generateButton
+                        }
+                        .padding(.horizontal, 16)
                     }
-                    .frame(height: 40)
-                    .clipped()
+                    .opacity(generator.isLoading ? 0.05 : 1)
                     
-                    VStack(spacing: 12) {
-                        modePickerSection
-                        
-                        textInputSection
-                        
-                        imageUploadSection
-                        
-                        generateButton
-                    }
-                    .padding(.horizontal, 16)
-                    
-                    // result
                     resultSection
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(.appBlack.opacity(0.9))
                 }
             }
             .navigationDestination(isPresented: $showSubscribeView) {
@@ -70,9 +75,13 @@ struct PhotoView: View {
     // MARK: - Компоненты интерфейса
     private var modePickerSection: some View {
         Picker("", selection: $mode) {
-            Text("Without Photo").tag(GenerationMode.textOnly)
+            Text("Without Photo")
+                .tag(GenerationMode.textOnly)
+                .foregroundStyle(mode == .textOnly ? .appBlack : .appWhite)
             //Text("Картинка").tag(GenerationMode.imageOnly)
-            Text("Use Photo").tag(GenerationMode.textAndImage)
+            Text("Use Photo")
+                .tag(GenerationMode.textAndImage)
+                .foregroundStyle(mode == .textAndImage ? .appBlack : .appWhite)
         }
         .pickerStyle(.segmented)
         .background(
@@ -89,7 +98,7 @@ struct PhotoView: View {
     private var textInputSection: some View {
         VStack {
             Text("Enter Promt")
-                .urbanist(.montserratMedium, 19)
+                .urbanist(.montserratMedium, 21)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundStyle(.appWhite)
             
@@ -135,7 +144,7 @@ struct PhotoView: View {
                 Image(uiImage: inputImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(maxWidth: .infinity, maxHeight: 212)
+                    .frame(maxWidth: widthScreen - 32, minHeight: 212, maxHeight: 212)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .clipped()
                     .overlay(alignment: .topTrailing) {
@@ -143,10 +152,10 @@ struct PhotoView: View {
                             generator.inputImage = nil
                         } label: {
                             Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 17, weight: .medium))
                                 .foregroundColor(.appBlack)
-                                .padding(8)
+                                .padding(14)
                         }
-                        .padding(.trailing, 12)
                     }
             } else {
                 VStack(spacing: 8) {
@@ -167,7 +176,7 @@ struct PhotoView: View {
                 .opacity(mode == .textOnly ? 0 : 1)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 212, maxHeight: 212)
+        .frame(minHeight: 212, maxHeight: 212)
         .background(.appWhite.opacity(mode == .textOnly ? 0 : 0.05))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
@@ -198,11 +207,15 @@ struct PhotoView: View {
     private var resultSection: some View {
         Group {
             if generator.isLoading {
-                VStack {
+                VStack(spacing: 4) {
                     ProgressView("Генерация...")
+                        .tint(.appWhite)
+
                     Text("Обычно занимает 10-30 секунд")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .urbanist(.montserratMedium, 16)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.appWhite)
                 }
             } else if let error = generator.error {
                 errorView(error)
@@ -210,28 +223,32 @@ struct PhotoView: View {
                 resultImageView(image)
             }
         }
-        .frame(minHeight: 300)
+        .frame(maxWidth: .infinity, minHeight: 300, maxHeight: 460)
     }
     
     private func errorView(_ message: String) -> some View {
-        VStack {
+        VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.largeTitle)
-                .foregroundColor(.red)
+                .foregroundColor(.appWhite)
+
             Text(message)
-                .foregroundColor(.red)
+                .urbanist(.montserratMedium, 14)
+                .frame(maxWidth: .infinity)
+                .foregroundColor(.appWhite)
                 .multilineTextAlignment(.center)
         }
         .padding()
     }
     
     private func resultImageView(_ image: UIImage) -> some View {
-        VStack {
+        VStack(spacing: 12) {
             Image(uiImage: image)
                 .resizable()
-                .scaledToFit()
-                .cornerRadius(12)
-                .shadow(radius: 5)
+                .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: 420)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipped()
             
             HStack {
                 Button {
@@ -246,8 +263,8 @@ struct PhotoView: View {
             }
             .buttonStyle(.bordered)
         }
+        .padding(.horizontal, 16)
     }
-
 }
 
 // MARK: - ImagePicker для загрузки фото

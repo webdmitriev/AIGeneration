@@ -140,34 +140,6 @@ final class ImageGenerator: ObservableObject {
         
         await setVideoGenerating(false)
     }
-
-//    private func checkVideoGenerationStatus(id: String) async throws {
-//        guard let apiKey = env.get("API_KEY"), apiKey != "NO_KEY" else {
-//            throw GenerationError.invalidResponse
-//        }
-//
-//        let endpoint = "https://api.stability.ai/v2beta/image-to-video/result/\(id)"
-//        var request = URLRequest(url: URL(string: endpoint)!)
-//        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-//        request.setValue("video/*", forHTTPHeaderField: "Accept")
-//
-//        let (data, response) = try await URLSession.shared.data(for: request)
-//
-//        if let httpResponse = response as? HTTPURLResponse {
-//            print("Status code: \(httpResponse.statusCode)")
-//        }
-//        print("Raw data length:", data.count)
-//
-//        // Сохраняем полученные бинарные данные как видеофайл
-//        if let videoURL = saveVideoToTempFile(data) {
-//            await MainActor.run {
-//                self.generatedVideoURL = videoURL
-//                self.videoPlayer = AVPlayer(url: videoURL)
-//            }
-//        } else {
-//            await updateError("Failed to save video file")
-//        }
-//    }
     
     func checkVideoGenerationStatus(id: String) async throws {
         guard let apiKey = env.get("API_KEY"), apiKey != "NO_KEY" else {

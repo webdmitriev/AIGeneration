@@ -143,7 +143,6 @@ struct VideoView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Image to Video")
             .alert(isPresented: $showingErrorAlert) {
                 Alert(title: Text("Error"),
                       message: Text(generator.error ?? "Unknown error"),

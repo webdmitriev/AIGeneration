@@ -18,6 +18,7 @@ struct TabItem {
 
 struct CustomTabBar: View {
     @EnvironmentObject var appState: AppState
+    @StateObject var generator = ImageGenerator()
     @State private var selectedTab: Int = 0
     
     let tabs: [TabItem] = [
@@ -68,7 +69,7 @@ struct CustomTabBar: View {
             PhotoView()
                 .environmentObject(appState)
         case 2:
-            VideoView()
+            VideoView(generator: generator)
                 .environmentObject(appState)
         case 3:
             HistoryView(selection: $selectedTab)

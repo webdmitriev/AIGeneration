@@ -6,109 +6,189 @@
 //
 
 import SwiftUI
+import AVKit
 import PhotosUI
 
 struct VideoView: View {
-    @State private var showSubscribeView: Bool = false
-    @State private var withoutPhoto: Bool = true
-    @State private var usePhoto: Bool = false
-    
-    @State private var selectedImageData: Data? = nil
-    @State private var selectedPhotoItem: PhotosPickerItem? = nil
-    
-    private let widthScreen: CGFloat = UIScreen.main.bounds.width
+    @ObservedObject var generator: ImageGenerator
+    @EnvironmentObject var appState: AppState
+
+    @State private var prompt: String = ""
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var showingErrorAlert = false
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 22) {
-                CustomTopBar(title: "AI Video") {
-                    showSubscribeView = true
-                }
-                .frame(height: 40)
-                .clipped()
-                
-                toogleBar
-                
-                EnterPromptView()
-                
-                getLibraryPicture
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 20) {
+                    Text("Image to Video")
+                        .font(.title)
+                        .bold()
 
-                Button {
-                    print("Generate")
-                } label: {
-                    if selectedImageData == nil {
-                        Text("Create")
-                            .modifier(ButtonBlackModifier())
-                    } else {
-                        Text("Generate")
-                            .modifier(ButtonPurpuleModifier())
+                    // MARK: - Image Picker
+                    PhotosPicker(
+                        selection: $selectedItem,
+                        matching: .images,
+                        photoLibrary: .shared()) {
+                        HStack {
+                            Image(systemName: "photo.on.rectangle.angled")
+                            Text(generator.inputImage == nil ? "Select Image" : "Change Image")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue.opacity(0.8))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .onChange(of: selectedItem) { oldValue, newItem in
+                        Task {
+                            if let data = try? await newItem?.loadTransferable(type: Data.self),
+                               let uiImage = UIImage(data: data) {
+                                await MainActor.run {
+                                    generator.inputImage = uiImage
+                                }
+                            }
+                        }
+                    }
+
+                    // MARK: - Selected Image Preview
+                    if let inputImage = generator.inputImage {
+                        Image(uiImage: inputImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 200)
+                            .cornerRadius(12)
+                            .shadow(radius: 4)
+                            .padding(.horizontal)
+                    }
+
+                    // MARK: - Prompt Input
+                    TextField("Enter prompt...", text: $prompt)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+
+                    // MARK: - Generate Button
+                    Button(action: {
+                        Task {
+                            await generateVideo()
+                        }
+                    }) {
+                        if generator.isVideoGenerating {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .padding()
+                        } else {
+                            Text("Generate Video")
+                                .fontWeight(.semibold)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.green)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                    }
+                    .disabled(generator.isVideoGenerating || generator.inputImage == nil || prompt.isEmpty)
+                    .padding(.horizontal)
+
+                    // MARK: - Result Video Player
+                    if generator.generatedVideoURL != nil {
+                        Text("Generated Video")
+                            .font(.headline)
+                            .padding(.top)
+
+                        VideoPlayer(player: generator.videoPlayer)
+                            .frame(height: 300)
+                            .cornerRadius(12)
+                            .padding()
+                    }
+
+                    Spacer()
+                    
+                    // MARK: - Status Information
+                    if generator.isVideoGenerating {
+                        VStack {
+                            ProgressView("Generating video...")
+                                .padding(.bottom, 4)
+                            
+                            Text("This may take 1-2 minutes")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    // MARK: - Result Video Player
+                    if let player = generator.videoPlayer {
+                        Text("Generated Video")
+                            .font(.headline)
+                            .padding(.top)
+                        
+                        VideoPlayer(player: player)
+                            .frame(height: 300)
+                            .cornerRadius(12)
+                            .padding()
+                            .onAppear {
+                                player.play()
+                            }
+                        
+                        Button(action: saveVideoToGallery) {
+                            Label("Save to Photos", systemImage: "square.and.arrow.down")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+                        .padding(.horizontal)
                     }
                 }
-                .padding(.horizontal, 16)
-                
-                Spacer()
+                .padding()
             }
-            .navigationDestination(isPresented: $showSubscribeView) {
-                SubscribeView()
+            .navigationTitle("Image to Video")
+            .alert(isPresented: $showingErrorAlert) {
+                Alert(title: Text("Error"),
+                      message: Text(generator.error ?? "Unknown error"),
+                      dismissButton: .default(Text("OK")))
             }
-            .onChange(of: selectedPhotoItem) { oldValue, newItem in
-                Task {
-                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                        selectedImageData = data
-                    }
+            .onReceive(generator.$error) { newError in
+                if newError != nil {
+                    showingErrorAlert = true
                 }
             }
-            .frame(maxHeight: .infinity)
-            .padding(.bottom, 60)
-            .background(.appBg)
-            .navigationBarHidden(true)
+        }
+    }
+
+    private func generateVideo() async {
+        guard let inputImage = generator.inputImage else {
+            generator.error = "Please select an image first."
+            return
+        }
+        
+        guard !prompt.isEmpty else {
+            generator.error = "Please enter a prompt."
+            return
+        }
+        
+        await generator.generateVideo(from: inputImage, prompt: prompt)
+        
+        // Автоматическое воспроизведение после генерации
+        if let player = generator.videoPlayer {
+            player.play()
         }
     }
     
-    private var toogleBar: some View {
-        HStack {
-            Button {
-                withoutPhoto = true
-                usePhoto = false
-                
-                selectedImageData = nil
-                selectedPhotoItem = nil
-            } label: {
-                Text("Without Photo")
-                    .frame(maxWidth: widthScreen / 2, maxHeight: 32, alignment: .center)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(withoutPhoto ? .appBlack : .appWhite)
-                    .background(withoutPhoto ? .appWhite : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-            
-            Button {
-                withoutPhoto = false
-                usePhoto = true
-            } label: {
-                Text("Use Photo")
-                    .frame(maxWidth: widthScreen / 2, maxHeight: 32, alignment: .center)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(usePhoto ? .appBlack : .appWhite)
-                    .background(usePhoto ? .appWhite : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+    private func saveVideoToGallery() {
+        guard let url = generator.generatedVideoURL else { return }
+        
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+        }) { success, error in
+            DispatchQueue.main.async {
+                if success {
+                    generator.error = "Video saved to Photos!"
+                } else {
+                    generator.error = error?.localizedDescription ?? "Failed to save video"
+                }
             }
         }
-        .frame(maxWidth: .infinity)
-        .background(.appWhite.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-        .clipped()
-    }
-    
-    private var getLibraryPicture: some View {
-        VStack {
-            if usePhoto {
-                GetLibraryPicture(imageData: $selectedImageData, photoItem: $selectedPhotoItem)
-            }
-        }
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, minHeight: 212, maxHeight: 212)
     }
 }

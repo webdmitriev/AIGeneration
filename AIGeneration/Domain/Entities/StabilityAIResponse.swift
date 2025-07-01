@@ -31,6 +31,9 @@ enum GenerationError: LocalizedError {
     case invalidImageData
     case apiError(message: String)
     case unknownError
+    case invalidResponse
+    case networkError
+    case unknown
     
     var errorDescription: String? {
         switch self {
@@ -40,6 +43,9 @@ enum GenerationError: LocalizedError {
         case .invalidImageData: return "Невозможно создать изображение"
         case .apiError(let message): return message
         case .unknownError: return "Неизвестная ошибка"
+        case .invalidResponse: return "invalidResponse"
+        case .networkError: return "networkError"
+        case .unknown: return "unknown"
         }
     }
 }

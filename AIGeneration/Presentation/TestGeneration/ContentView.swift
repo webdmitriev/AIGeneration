@@ -11,7 +11,7 @@ import PhotosUI
 struct ContentView: View {
     @StateObject private var generator = ImageGenerator()
     @State private var prompt: String = ""
-    @State private var mode: GenerationMode = .textOnly
+    @State private var mode: GenerationMode = .imageOnly
     @State private var showImagePicker = false
     
     var body: some View {
@@ -23,11 +23,6 @@ struct ContentView: View {
                 // Поле ввода текста (скрыто в режиме imageOnly)
                 if mode != .imageOnly {
                     textInputSection
-                }
-                
-                // Кнопка загрузки изображения (скрыта в режиме textOnly)
-                if mode != .textOnly {
-                    imageUploadSection
                 }
                 
                 // Кнопка генерации
@@ -49,7 +44,6 @@ struct ContentView: View {
     // MARK: - Компоненты интерфейса
     private var modePickerSection: some View {
         Picker("Режим генерации", selection: $mode) {
-            Text("Текст").tag(GenerationMode.textOnly)
             Text("Картинка").tag(GenerationMode.imageOnly)
             Text("Текст + Картинка").tag(GenerationMode.textAndImage)
         }
@@ -110,7 +104,7 @@ struct ContentView: View {
             }
         }
         .buttonStyle(.borderedProminent)
-        .disabled(generator.isLoading || (mode != .textOnly && generator.inputImage == nil))
+        .disabled(generator.isLoading || (mode != .imageOnly && generator.inputImage == nil))
     }
     
     private var resultSection: some View {

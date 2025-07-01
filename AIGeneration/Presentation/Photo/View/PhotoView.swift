@@ -20,6 +20,7 @@ struct PhotoView: View {
     @State private var selectedPhotoItem: PhotosPickerItem? = nil
     
     private let widthScreen: CGFloat = UIScreen.main.bounds.width
+    private let placeholderString: String = "Type what should be shown in the sketch"
 
     var body: some View {
         NavigationStack {
@@ -30,38 +31,27 @@ struct PhotoView: View {
                 .frame(height: 40)
                 .clipped()
                 
-                modePickerSection
-                
-                textInputSection
-                
-                imageUploadSection
-                
-                generateButton
-                
-                
-
-                
-                EnterPromptView()
-                
-                getLibraryPicture
-
-                Button {
-                    print("Generate")
-                } label: {
-                    if selectedImageData == nil {
-                        Text("Create")
-                            .modifier(ButtonBlackModifier())
-                    } else {
-                        Text("Generate")
-                            .modifier(ButtonPurpuleModifier())
-                    }
+                VStack(spacing: 12) {
+                    modePickerSection
+                    
+                    textInputSection
+                    
+                    imageUploadSection
+                    
+                    generateButton
                 }
                 .padding(.horizontal, 16)
+                    
+                // result
+                resultSection
                 
                 Spacer()
             }
             .navigationDestination(isPresented: $showSubscribeView) {
                 SubscribeView()
+            }
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $generator.inputImage)
             }
             .onChange(of: selectedPhotoItem) { oldValue, newItem in
                 Task {
@@ -79,22 +69,42 @@ struct PhotoView: View {
     
     // MARK: - Компоненты интерфейса
     private var modePickerSection: some View {
-        Picker("Режим генерации", selection: $mode) {
-            Text("Текст").tag(GenerationMode.textOnly)
-            Text("Картинка").tag(GenerationMode.imageOnly)
-            Text("Текст + Картинка").tag(GenerationMode.textAndImage)
+        Picker("", selection: $mode) {
+            Text("Without Photo").tag(GenerationMode.textOnly)
+            //Text("Картинка").tag(GenerationMode.imageOnly)
+            Text("Use Photo").tag(GenerationMode.textAndImage)
         }
         .pickerStyle(.segmented)
-        .padding(.bottom, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 22) // Увеличиваем скругление
+                .fill(Color.gray.opacity(0.2)) // Фон
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 22)) // Обрезаем края
+        .padding(.bottom, 18)
         .onChange(of: mode) { oldValue, _ in
             generator.generatedImage = nil
         }
     }
     
     private var textInputSection: some View {
-        TextField("Опишите изображение...", text: $prompt, axis: .vertical)
-            .textFieldStyle(.roundedBorder)
-            .lineLimit(3...5)
+        VStack {
+            Text("Enter Promt")
+                .urbanist(.montserratMedium, 19)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(.appWhite)
+            
+            ZStack {
+                TextField("", text: $prompt,
+                          prompt: Text(placeholderString).foregroundColor(.appWhite.opacity(0.2)),
+                          axis: .vertical)
+                .padding(12)
+                .textFieldStyle(.plain)
+                .foregroundStyle(.appWhite.opacity(0.8))
+                .background(.appWhite.opacity(0.05))
+                .lineLimit(8...10)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+        }
     }
     
     private var imageUploadSection: some View {
@@ -102,28 +112,41 @@ struct PhotoView: View {
             if let inputImage = generator.inputImage {
                 Image(uiImage: inputImage)
                     .resizable()
-                    .scaledToFit()
-                    .frame(height: 150)
-                    .cornerRadius(10)
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: 212)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .clipped()
                     .overlay(alignment: .topTrailing) {
                         Button {
                             generator.inputImage = nil
                         } label: {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.red)
-                                .padding(5)
+                                .foregroundColor(.appBlack)
+                                .padding(8)
                         }
                     }
             } else {
-                Button {
-                    showImagePicker = true
-                } label: {
-                    Label("Загрузить изображение", systemImage: "photo")
-                        .frame(maxWidth: .infinity)
+                VStack(spacing: 8) {
+                    Button {
+                        showImagePicker = true
+                    } label: {
+                        Image("tab-photo-active")
+                            .resizable()
+                            .frame(width: 58, height: 58)
+                            .scaledToFit()
+                    }
+                    
+                    Text("Tap here to add a photo")
+                        .urbanist(.montserratMedium, 16)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundStyle(.appWhite.opacity(0.2))
                 }
-                .buttonStyle(.bordered)
+                .opacity(mode == .textOnly ? 0 : 1)
             }
         }
+        .frame(maxWidth: .infinity, minHeight: 212, maxHeight: 212)
+        .background(.appWhite.opacity(mode == .textOnly ? 0 : 0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     private var generateButton: some View {
@@ -137,11 +160,15 @@ struct PhotoView: View {
                     .tint(.white)
             } else {
                 Text("Сгенерировать")
-                    .frame(maxWidth: .infinity)
+                    .urbanist(.montserratMedium, 16)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+                    .foregroundStyle(.appWhite)
+                    .background(.appWhite.opacity(0.05))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
             }
         }
-        .buttonStyle(.borderedProminent)
-        .disabled(generator.isLoading || (mode != .textOnly && generator.inputImage == nil))
+        .disabled(generator.isLoading || prompt.isEmpty)
     }
     
     private var resultSection: some View {
@@ -196,18 +223,7 @@ struct PhotoView: View {
             .buttonStyle(.bordered)
         }
     }
-    
-    
-    
-    
-    
-    private var getLibraryPicture: some View {
-        VStack {
-            GetLibraryPicture(imageData: $selectedImageData, photoItem: $selectedPhotoItem)
-        }
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, minHeight: 212, maxHeight: 212)
-    }
+
 }
 
 // MARK: - ImagePicker для загрузки фото

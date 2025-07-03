@@ -85,7 +85,7 @@ struct HomeView: View {
                 ) {
                     ForEach(viewModel.filteredItems, id: \.id) { item in
                         NavigationLink(destination: AIGenerationCardSingle(item: item)) {
-                            AIGenerationCard(item: item)
+                            AIGenerationCard(item: item, prompt: "Text image")
                         }
                     }
                 }
@@ -113,40 +113,6 @@ struct CategoryButton: View {
                         .fill(isSelected ? Color.appPurpule : Color.gray.opacity(0.1))
                 )
         }
-    }
-}
-
-// MARK: AIGenerationCard + for HistoryView
-struct AIGenerationCard: View {
-    let item: AIGenerationItemStruct
-    
-    var body: some View {
-        VStack {
-            Spacer()
-            
-            ZStack(alignment: .bottomLeading) {
-                
-                BgGradient(height: 98, opacity: 0.8)
-                
-                Text(item.title)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.system(size: 16, weight: .medium))
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-            }
-        }
-        .frame(height: 216)
-        .background(
-            Image(item.image)
-                .resizable()
-                .scaledToFill()
-                .clipped()
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-        .clipped()
     }
 }
 

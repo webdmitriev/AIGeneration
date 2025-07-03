@@ -14,26 +14,16 @@ struct SettingsView: View {
     
     var body: some View {
         VStack {
+            Spacer()
+
             Text("SettingsView")
+                .foregroundStyle(.appWhite)
             
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, 16)
         .background(.appBg)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    dismiss()
-                }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .bold))
-                    }
-                    .foregroundColor(.appWhite)
-                }
-            }
-        }
-        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
 }

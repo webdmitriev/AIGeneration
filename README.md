@@ -25,7 +25,7 @@ SwiftUI-приложение для генерации изображений / 
 ## 📸 Скриншоты
 | Onboarding | HomeView | Premium | AI Photo | History |
 |--------------|--------------|--------------|--------------|--------------|
-| ![Onboarding](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-01.01-scaled.jpg) | ![HomeView](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-02.01-scaled.jpg) | ![Premium](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-05.01-scaled.jpg) | ![AI Photo](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-03.01-scaled.jpg) | ![History](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-04.01-scaled.jpg) |
+| ![Onboarding](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-01.01-scaled.jpg) | ![HomeView](https://api.webdmitriev.com/wp-content/uploads/2025/07/aigeneration-02.02-scaled.jpg) | ![Premium](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-05.01-scaled.jpg) | ![AI Photo](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-03.01-scaled.jpg) | ![History](https://api.webdmitriev.com/wp-content/uploads/2025/06/aigeneration-04.01-scaled.jpg) |
 
 ## ⚙️ Установка
 1. Клонируйте репозиторий:

@@ -11,3 +11,4 @@ final class HistoryViewModel: ObservableObject {
     @Published private(set) var items = AIGenerationStruct.mockData()
     
 }
+

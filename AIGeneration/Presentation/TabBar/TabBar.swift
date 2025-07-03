@@ -18,8 +18,17 @@ struct TabItem {
 
 struct CustomTabBar: View {
     @EnvironmentObject var appState: AppState
-    @StateObject var generator = ImageGenerator()
+    
+    @StateObject private var historyStore: HistoryStore
+    @StateObject private var generator: ImageGenerator
+    
     @State private var selectedTab: Int = 0
+    
+    init() {
+        let history = HistoryStore()
+        _historyStore = StateObject(wrappedValue: history)
+        _generator = StateObject(wrappedValue: ImageGenerator(historyStore: history))
+    }
     
     let tabs: [TabItem] = [
         TabItem(icon: "tab-main", title: "Main"),
@@ -66,10 +75,10 @@ struct CustomTabBar: View {
             HomeView()
                 .environmentObject(appState)
         case 1:
-            PhotoView()
+            PhotoView(generator: generator)
                 .environmentObject(appState)
         case 2:
-            HistoryView(selection: $selectedTab)
+            HistoryView(historyStore: historyStore)
                 .environmentObject(appState)
         case 3:
             SettingsView()

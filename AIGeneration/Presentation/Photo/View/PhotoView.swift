@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct PhotoView: View {
-    @StateObject private var generator = ImageGenerator()
+    @StateObject var generator: ImageGenerator
 
     @State private var prompt: String = ""
     @State private var mode: GenerationMode = .textOnly
@@ -22,7 +22,7 @@ struct PhotoView: View {
     
     private let widthScreen: CGFloat = UIScreen.main.bounds.width
     private let placeholderString: String = "Type what should be shown in the sketch"
-
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -260,6 +260,19 @@ struct PhotoView: View {
                 ShareLink(item: Image(uiImage: image), preview: SharePreview("AI изображение", image: Image(uiImage: image))) {
                     Label("Поделиться", systemImage: "square.and.arrow.up")
                 }
+                
+                Button {
+                    generator.isLoading = false
+                    selectedImageData = nil
+                    selectedPhotoItem = nil
+                    
+                    generator.generatedImage = nil
+                } label: {
+                    Image(systemName: "xmark")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .scaledToFit()
+                }
             }
             .buttonStyle(.bordered)
         }
@@ -301,8 +314,3 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-#Preview {
-    let appState = AppState()
-    return PhotoView()
-        .environmentObject(appState)
-}

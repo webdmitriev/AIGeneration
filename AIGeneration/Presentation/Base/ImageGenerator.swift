@@ -15,7 +15,10 @@ final class ImageGenerator: ObservableObject {
     @Published var error: String?
     @Published var inputImage: UIImage?
     
+    @Published var historyStore: HistoryStore = HistoryStore()
+    
     // MARK: - Приватные свойства
+    private var lastPrompt: String?
     private var checkStatusTask: Task<Void, Error>?
     private let env = Env()
     private var defaultHeaders: [String: String] {
@@ -23,6 +26,10 @@ final class ImageGenerator: ObservableObject {
             "Accept": "application/json",
             "Authorization": "Bearer \(env.get("API_KEY") ?? "NO_KEY")"
         ]
+    }
+    
+    init(historyStore: HistoryStore) {
+        self.historyStore = historyStore
     }
     
     // MARK: - Основной метод генерации
@@ -44,6 +51,8 @@ final class ImageGenerator: ObservableObject {
         }
         
         await setLoading(false)
+        
+        self.lastPrompt = prompt
     }
     
     private func prepareStrictSizeImage(_ image: UIImage) -> UIImage? {
@@ -201,6 +210,7 @@ extension ImageGenerator {
            let imageData = Data(base64Encoded: base64String),
            let image = UIImage(data: imageData) {
             await updateImage(image)
+            historyStore.addImage(image)
         } else {
             throw GenerationError.invalidImageData
         }

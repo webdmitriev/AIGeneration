@@ -5,14 +5,7 @@
 //  Created by Олег Дмитриев on 28.06.2025.
 //
 
-import UIKit
 import SwiftUI
-import AVKit
-
-struct VideoGenerationResponse: Codable {
-    let id: String?
-    let status: String?
-}
 
 @MainActor
 final class ImageGenerator: ObservableObject {
@@ -21,11 +14,6 @@ final class ImageGenerator: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
     @Published var inputImage: UIImage?
-    
-    // MARK: - For video
-    @Published var generatedVideoURL: URL?
-    @Published var isVideoGenerating = false
-    @Published var videoPlayer: AVPlayer?
     
     // MARK: - Приватные свойства
     private var checkStatusTask: Task<Void, Error>?
@@ -56,177 +44,6 @@ final class ImageGenerator: ObservableObject {
         }
         
         await setLoading(false)
-    }
-    
-    // MARK: - Video Generation
-    func generateVideo(from image: UIImage, prompt: String) async {
-        guard let apiKey = env.get("API_KEY"), apiKey != "NO_KEY" else {
-            await updateError("API Key not found")
-            return
-        }
-        
-        // 1. Жёсткий ресайз без сохранения пропорций
-        guard let resizedImage = prepareStrictSizeImage(image) else {
-            await updateError("Image processing failed")
-            return
-        }
-        
-        // 2. Проверка перед отправкой (критически важно)
-        print("Final image size: \(resizedImage.size)")
-        assert(
-            resizedImage.size == CGSize(width: 1024, height: 576) ||
-            resizedImage.size == CGSize(width: 576, height: 1024) ||
-            resizedImage.size == CGSize(width: 768, height: 768),
-            "Invalid image dimensions after resizing"
-        )
-        
-        await setVideoGenerating(true)
-        await resetVideoState()
-
-        do {
-            // 3. Создание запроса
-            let boundary = UUID().uuidString
-            var request = URLRequest(url: URL(string: "https://api.stability.ai/v2beta/image-to-video")!)
-            request.httpMethod = "POST"
-            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-            
-            // 4. Подготовка тела запроса
-            var body = Data()
-            
-            // Добавляем изображение
-            if let imageData = resizedImage.jpegData(compressionQuality: 0.85) {
-                body.append("--\(boundary)\r\n".data(using: .utf8)!)
-                body.append("Content-Disposition: form-data; name=\"image\"; filename=\"input.jpg\"\r\n".data(using: .utf8)!)
-                body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-                body.append(imageData)
-                body.append("\r\n".data(using: .utf8)!)
-            }
-            
-            // Добавляем промпт
-            body.append("--\(boundary)\r\n".data(using: .utf8)!)
-            body.append("Content-Disposition: form-data; name=\"prompt\"\r\n\r\n".data(using: .utf8)!)
-            body.append("\(prompt)\r\n".data(using: .utf8)!)
-            
-            body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-            request.httpBody = body
-            
-            // 5. Отправка запроса
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw GenerationError.invalidResponse
-            }
-            
-            print("Status code: \(httpResponse.statusCode)")
-            let responseString = String(data: data, encoding: .utf8) ?? "Empty response"
-            print("Response: \(responseString)")
-            
-            guard httpResponse.statusCode == 200 else {
-                throw GenerationError.apiError(message: httpResponse.statusCode.description)
-            }
-            
-            let decodedResponse = try JSONDecoder().decode(VideoGenerationResponse.self, from: data)
-            guard let generationId = decodedResponse.id else {
-                throw GenerationError.apiError(message: "No generation ID in response")
-            }
-            
-            try await checkVideoGenerationStatus(id: generationId)
-            
-        } catch {
-            await handleError(error)
-            print("Video generation failed: \(error)")
-        }
-        
-        await setVideoGenerating(false)
-    }
-    
-    func checkVideoGenerationStatus(id: String) async throws {
-        guard let apiKey = env.get("API_KEY"), apiKey != "NO_KEY" else {
-            throw GenerationError.invalidResponse
-        }
-        let endpoint = "https://api.stability.ai/v2beta/image-to-video/result/\(id)"
-        var request = URLRequest(url: URL(string: endpoint)!)
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        
-        // Отменяем предыдущую задачу проверки
-        checkStatusTask?.cancel()
-        
-        checkStatusTask = Task {
-            while !Task.isCancelled {
-                let (data, response) = try await URLSession.shared.data(for: request)
-                
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    throw GenerationError.invalidResponse
-                }
-                
-                print("Status check: \(httpResponse.statusCode)")
-                
-                switch httpResponse.statusCode {
-                case 200: // Видео готово
-                    let tempURL = saveVideoToTempFile(data)
-                    await MainActor.run {
-                        self.generatedVideoURL = tempURL
-                        self.videoPlayer = AVPlayer(url: tempURL!)
-                    }
-                    return
-                    
-                case 202: // Генерация еще в процессе
-                    print("Video is being generated, waiting...")
-                    try await Task.sleep(nanoseconds: 3_000_000_000) // Ждем 3 секунды
-                    continue
-                    
-                default:
-                    throw GenerationError.apiError(message: httpResponse.statusCode.description)
-                }
-            }
-        }
-        
-        try await checkStatusTask?.value
-    }
-    
-    private func saveVideoToTempFile(_ data: Data) -> URL? {
-        let tempDir = FileManager.default.temporaryDirectory
-        let fileURL = tempDir.appendingPathComponent("generated-video-\(UUID().uuidString).mp4")
-        
-        do {
-            try data.write(to: fileURL)
-            return fileURL
-        } catch {
-            print("Failed to save video: \(error)")
-            return nil
-        }
-    }
-    
-    @MainActor
-    private func updateError(_ message: String) async {
-        self.error = message
-    }
-
-    @MainActor
-    private func setVideoGenerating(_ value: Bool) async {
-        self.isVideoGenerating = value
-    }
-
-    @MainActor
-    private func resetVideoState() async {
-        self.generatedVideoURL = nil
-        self.videoPlayer = nil
-    }
-
-    @MainActor
-    private func setLoading(_ value: Bool) {
-        self.isLoading = value
-        if value {
-            self.error = nil
-        }
-    }
-
-    @MainActor
-    private func resetState() {
-        self.generatedImage = nil
-        self.error = nil
-        self.inputImage = nil
     }
     
     private func prepareStrictSizeImage(_ image: UIImage) -> UIImage? {
@@ -446,35 +263,5 @@ extension ImageGenerator {
             }
             print("Generation failed: \(error)")
         }
-    }
-}
-
-// MARK: - Изменяем размер изображения (для video)
-extension ImageGenerator {
-    private func prepareImageForVideo(_ image: UIImage) -> UIImage? {
-        // 1. Определяем ориентацию изображения
-        let isLandscape = image.size.width > image.size.height
-        let isPortrait = image.size.height > image.size.width
-        _ = image.size.width == image.size.height
-        
-        // 2. Выбираем целевой размер
-        let targetSize: CGSize
-        if isLandscape {
-            targetSize = CGSize(width: 1024, height: 576)
-        } else if isPortrait {
-            targetSize = CGSize(width: 576, height: 1024)
-        } else {
-            targetSize = CGSize(width: 768, height: 768)
-        }
-        
-        // 3. Масштабирование с сохранением пропорций
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
-        let resizedImage = renderer.image { _ in
-            image.draw(in: CGRect(origin: .zero, size: targetSize))
-        }
-        
-        // 4. Проверка результата
-        print("Resized to: \(resizedImage.size)") // Должно вывести 1024x576, 576x1024 или 768x768
-        return resizedImage
     }
 }

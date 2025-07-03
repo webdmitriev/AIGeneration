@@ -18,16 +18,6 @@ struct SettingsView: View {
             
             Spacer()
         }
-        .onAppear {
-            withAnimation {
-                appState.isTabBarVisible = false
-            }
-        }
-        .onDisappear {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                appState.isTabBarVisible = true
-            }
-        }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, 16)
         .background(.appBg)

@@ -10,8 +10,7 @@ import SwiftUI
 struct HistoryView: View {
     @Binding var selection: Int
     
-    @State private var showSettingsView: Bool = false
-    @State private var tabToggle: Bool = true
+    @State private var showSubscribeView = false
     
     @StateObject private var viewModel = HistoryViewModel()
     
@@ -23,22 +22,16 @@ struct HistoryView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 22) {
-                CustomTopBar(title: "History", darkMode: true) {
-                    showSettingsView = true
+                CustomTopBar(title: "History") {
+                    showSubscribeView = true
                 }
                 .frame(height: 40)
                 .clipped()
                 
-                toogleBar
-                
-                if tabToggle {
-                    tabPhotosView
-                } else {
-                    tabVideosView
-                }
+                tabPhotosView
             }
-            .navigationDestination(isPresented: $showSettingsView) {
-                SettingsView()
+            .navigationDestination(isPresented: $showSubscribeView) {
+                SubscribeView()
             }
             .frame(maxHeight: .infinity)
             .padding(.bottom, 60)
@@ -47,52 +40,10 @@ struct HistoryView: View {
         }
     }
     
-    private var toogleBar: some View {
-        HStack {
-            Button {
-                tabToggle.toggle()
-            } label: {
-                Text("Photo")
-                    .frame(maxWidth: widthScreen / 2, maxHeight: 32, alignment: .center)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(tabToggle ? .appBlack : .appWhite)
-                    .background(tabToggle ? .appWhite : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-            
-            Button {
-                tabToggle.toggle()
-            } label: {
-                Text("Video")
-                    .frame(maxWidth: widthScreen / 2, maxHeight: 32, alignment: .center)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(!tabToggle ? .appBlack : .appWhite)
-                    .background(!tabToggle ? .appWhite : .clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .background(.appWhite.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal, 16)
-        .clipped()
-    }
-    
     private var tabPhotosView: some View {
         Group {
             if viewModel.items.count > 0 {
                 contentCardsView
-            } else {
-                isEmptyView
-            }
-        }
-    }
-    
-    private var tabVideosView: some View {
-        Group {
-            if listVideos.count > 0 {
-                Text("Videos")
-                    .foregroundStyle(.appWhite)
             } else {
                 isEmptyView
             }

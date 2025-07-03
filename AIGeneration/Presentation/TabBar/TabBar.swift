@@ -24,8 +24,8 @@ struct CustomTabBar: View {
     let tabs: [TabItem] = [
         TabItem(icon: "tab-main", title: "Main"),
         TabItem(icon: "tab-photo", title: "Photo"),
-        TabItem(icon: "tab-video", title: "Video"),
-        TabItem(icon: "tab-history", title: "History")
+        TabItem(icon: "tab-history", title: "History"),
+        TabItem(icon: "tab-settings", title: "Settings")
     ]
     
     var body: some View {
@@ -69,10 +69,10 @@ struct CustomTabBar: View {
             PhotoView()
                 .environmentObject(appState)
         case 2:
-            VideoView(generator: generator)
+            HistoryView(selection: $selectedTab)
                 .environmentObject(appState)
         case 3:
-            HistoryView(selection: $selectedTab)
+            SettingsView()
                 .environmentObject(appState)
         default:
             EmptyView()

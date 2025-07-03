@@ -245,7 +245,7 @@ struct PhotoView: View {
         VStack(spacing: 12) {
             Image(uiImage: image)
                 .resizable()
-                .scaledToFill()
+                .scaledToFit()
                 .frame(maxWidth: .infinity, maxHeight: 420)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .clipped()

@@ -13,27 +13,34 @@ struct AIGenerationStruct: Hashable {
     
     static func mockData() -> [AIGenerationItemStruct] {
         [
-            AIGenerationItemStruct(title: "Magic",
-                                   image: "ai-generation-item-image-01",
+            AIGenerationItemStruct(title: "Harry Potter",
+                                   descr: "Make a picture in the style of harry potter",
+                                   image: "ai-generation-cat-01",
                                    category: ["Magic"]),
-            AIGenerationItemStruct(title: "Fun-tastic Mermaid",
-                                   image: "ai-generation-item-image-01",
-                                   category: ["Fun-tastic Mermaid"]),
+            AIGenerationItemStruct(title: "Samurai Style",
+                                   descr: "Make a picture in samurai style",
+                                   image: "ai-generation-cat-02",
+                                   category: ["Samurai"]),
+            AIGenerationItemStruct(title: "Anime and Magic",
+                                   descr: "Make a picture in the style of magic and anime",
+                                   image: "ai-generation-cat-03",
+                                   category: ["Anime", "Magic"]),
             AIGenerationItemStruct(title: "Space",
-                                   image: "ai-generation-item-image-01",
+                                   descr: "Make a picture in space style",
+                                   image: "ai-generation-cat-04",
                                    category: ["Space"]),
-            AIGenerationItemStruct(title: "Cartoon",
-                                   image: "ai-generation-item-image-01",
-                                   category: ["Cartoon"]),
-            AIGenerationItemStruct(title: "Space",
-                                   image: "ai-generation-item-image-01",
-                                   category: ["Space"]),
-            AIGenerationItemStruct(title: "Anime",
-                                   image: "ai-generation-item-image-01",
-                                   category: ["Anime"]),
-            AIGenerationItemStruct(title: "Voxel art",
-                                   image: "ai-generation-item-image-01",
-                                   category: ["Voxel art"])
+            AIGenerationItemStruct(title: "Portrait",
+                                   descr: "Make a picture in portrait style",
+                                   image: "ai-generation-cat-05",
+                                   category: ["Portrait"]),
+            AIGenerationItemStruct(title: "AI Forest",
+                                   descr: "Make a picture in the style of a forest",
+                                   image: "ai-generation-cat-06",
+                                   category: ["AI Forest"]),
+            AIGenerationItemStruct(title: "Memes",
+                                   descr: "Make a picture in memes style",
+                                   image: "ai-generation-cat-07",
+                                   category: ["Memes"])
         ]
     }
 }
@@ -41,6 +48,7 @@ struct AIGenerationStruct: Hashable {
 struct AIGenerationItemStruct: Hashable {
     let id = UUID().description
     let title: String
+    let descr: String
     let image: String
     let category: [String]
 }

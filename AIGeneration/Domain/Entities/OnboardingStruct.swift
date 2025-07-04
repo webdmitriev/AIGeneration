@@ -17,7 +17,7 @@ struct OnboardingStruct: Hashable {
         [
             OnboardingStruct(title: "Create with AI",
                              descr: "Generate with text promts, photo and video uploads",
-                             image: "onboarding-01"),
+                             image: "onboarding-01.1"),
             OnboardingStruct(title: "Have fun",
                              descr: "Make funny videos and share with your friends.",
                              image: "onboarding-02"),

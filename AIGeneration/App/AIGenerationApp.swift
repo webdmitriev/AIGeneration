@@ -9,12 +9,9 @@ import SwiftUI
 
 @main
 struct AIGenerationApp: App {
-    let appState = AppState()
-    
     var body: some Scene {
         WindowGroup {
-            CustomTabBar()
-                .environmentObject(appState)
+            OnboardingView()
         }
     }
 }

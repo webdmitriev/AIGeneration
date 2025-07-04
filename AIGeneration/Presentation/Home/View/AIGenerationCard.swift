@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AIGenerationCard: View {
-
     let item: AIGenerationItemStruct
-    var prompt: String = ""
     
     var body: some View {
         VStack {

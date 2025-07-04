@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject var generator: ImageGenerator
+    @StateObject private var viewModel = HomeViewModel()
+    
     @State private var scrollOffset: CGFloat = 0
     @State private var isTopBarVisible: Bool = true
     @State private var showSubscribeView = false
-
-    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         NavigationStack {
@@ -84,8 +85,8 @@ struct HomeView: View {
                     spacing: 6
                 ) {
                     ForEach(viewModel.filteredItems, id: \.id) { item in
-                        NavigationLink(destination: AIGenerationCardSingle(item: item)) {
-                            AIGenerationCard(item: item, prompt: "Text image")
+                        NavigationLink(destination: AIGenerationCardSingle(generator: generator, item: item)) {
+                            AIGenerationCard(item: item)
                         }
                     }
                 }

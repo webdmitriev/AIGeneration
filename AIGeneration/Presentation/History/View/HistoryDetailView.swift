@@ -15,6 +15,8 @@ struct HistoryDetailView: View {
 
     var body: some View {
         VStack {
+            Spacer()
+
             Image(uiImage: image)
                 .resizable()
                 .scaledToFit()
@@ -27,7 +29,10 @@ struct HistoryDetailView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
             }
+
+            Spacer()
         }
+        .background(.appBg)
         .alert(isPresented: $showSaveAlert) {
             if let error = saveErrorMessage {
                 return Alert(title: Text("Error"), message: Text(error), dismissButton: .default(Text("OK")))

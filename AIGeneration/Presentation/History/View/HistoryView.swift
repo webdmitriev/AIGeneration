@@ -10,31 +10,44 @@ import SwiftUI
 struct HistoryView: View {
     @ObservedObject var historyStore: HistoryStore
     
+    @State private var showSubscribeView: Bool = false
+    
+    private let widthScreen: CGFloat = UIScreen.main.bounds.width
+    
     var body: some View {
         NavigationView {
-            List {
-                ForEach(historyStore.images.indices, id: \.self) { index in
-                    ZStack {
-                        Image(uiImage: historyStore.images[index])
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 360)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .listRowSeparator(.hidden)
-                        
-                        NavigationLink(destination:HistoryDetailView(image: historyStore.images[index])) {
-                            EmptyView()
-                        }
-                    }
+            VStack {
+                CustomTopBar(title: "AI Photo") {
+                    showSubscribeView = true
                 }
-                .onDelete(perform: delete)
+                .frame(height: 40)
+                .clipped()
+                
+                List {
+                    ForEach(historyStore.images.indices, id: \.self) { index in
+                        ZStack {
+                            Image(uiImage: historyStore.images[index])
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: widthScreen - 32)
+                                .frame(height: 320)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .clipped()
+                                .listRowSeparator(.hidden)
+                            
+                            NavigationLink(destination:HistoryDetailView(image: historyStore.images[index])) {
+                                EmptyView()
+                            }
+                        }
+                        .listRowBackground(Color.appBg)
+                    }
+                    .onDelete(perform: delete)
+                }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
-            .navigationTitle("History")
             .padding(.bottom, 60)
-            .toolbar {
-                EditButton()
-            }
+            .background(.appBg)
+            .navigationBarHidden(true)
         }
     }
     
@@ -42,5 +55,11 @@ struct HistoryView: View {
         for index in offsets {
             historyStore.deleteImage(at: index)
         }
+    }
+}
+
+struct HistoryViewItem: View {
+    var body: some View {
+        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
     }
 }

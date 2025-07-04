@@ -72,7 +72,7 @@ struct CustomTabBar: View {
     private var tabContentView: some View {
         switch selectedTab {
         case 0:
-            HomeView()
+            HomeView(generator: generator)
                 .environmentObject(appState)
         case 1:
             PhotoView(generator: generator)
